@@ -1,0 +1,75 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} About Us {% endblock %}
+
+{% block css %}
+.about-section {
+  padding: 3rem 0;
+}
+
+.about-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 2rem;
+  background: #fff;
+}
+
+.about-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.about-text {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.icon-box {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 0.5rem;
+}
+{% endblock %}
+
+{% block body %}
+<div class="container about-section">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 text-center">
+      <h2 class="about-title">About Us</h2>
+      <p class="about-text">
+        Welcome to <strong>MyCart</strong> — your trusted online shopping destination.  
+        We believe shopping should be simple, enjoyable, and affordable.  
+        That’s why we offer a wide range of products with the best deals and a smooth shopping experience.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mt-5 g-4">
+    <div class="col-md-4 text-center">
+      <div class="about-card">
+        <div class="icon-box">🛒</div>
+        <h5>Wide Selection</h5>
+        <p class="about-text">From electronics to fashion, explore thousands of products tailored to your needs.</p>
+      </div>
+    </div>
+    <div class="col-md-4 text-center">
+      <div class="about-card">
+        <div class="icon-box">⚡</div>
+        <h5>Fast Delivery</h5>
+        <p class="about-text">We ensure your orders reach your doorstep quickly and safely, with trusted delivery partners.</p>
+      </div>
+    </div>
+    <div class="col-md-4 text-center">
+      <div class="about-card">
+        <div class="icon-box">💙</div>
+        <h5>Customer First</h5>
+        <p class="about-text">Our support team is always ready to help, ensuring your shopping experience is hassle-free.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

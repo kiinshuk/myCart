@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} {% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      {% block css %} {% endblock %}
+
+      /* ===== Custom Cart Controls Styling ===== */
+      .cart-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 6px; /* spacing between - qty + */
+      }
+
+      .cart-controls button {
+        flex: 1; /* make - and + equal size */
+        border-radius: 6px;
+        padding: 0.4rem;
+        font-size: 0.9rem;
+      }
+
+      .cart-controls span {
+        flex: 1;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/shop">MyCart</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'TrackingStatus' %}">Tracker</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'AboutUs' %}">About us</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'ContactUs' %}">Contact us</a>
+            </li>
+          </ul>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          <button type="button" class="btn btn-secondary mx-2" id="popcart"
+            data-bs-toggle="popover" data-bs-placement="bottom"
+            data-bs-html="true"
+            title="Your Cart"
+            data-bs-content="">
+            Cart(<span id="cart">0</span>)
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    {% block body %} {% endblock %}
+
+    <!-- Bootstrap 5 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block js %}
+    <script>
+      console.log("working");
+
+      // ===============================
+      // Load cart data from localStorage
+      // ===============================
+      let cart = {};
+      if (localStorage.getItem('cart')) {
+        cart = JSON.parse(localStorage.getItem('cart'));
+        document.getElementById('cart').innerText = Object.keys(cart).length;
+      }
+
+      // ====================================================
+      // Function to update cart count + update card buttons
+      // ====================================================
+      function updateCart(cart) {
+        // Save cart in localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        // Update cart counter in navbar
+        document.getElementById('cart').innerText = Object.keys(cart).length;
+
+        // For each item in cart → show - qty +
+        for (let item in cart) {
+          let div = document.getElementById('div' + item);
+          if (div) {
+            div.innerHTML = `
+              <div class="cart-controls">
+                <button id="minus${item}" class="btn btn-danger minus">-</button>
+                <span id="val${item}">${cart[item]}</span>
+                <button id="plus${item}" class="btn btn-success plus">+</button>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // ==================================
+      // Add To Cart button → first click
+      // ==================================
+      document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('cart')) {
+          let idstr = e.target.id.toString(); // e.g. pr12
+          // If already in cart, increment, else add new
+          cart[idstr] = cart[idstr] ? cart[idstr] + 1 : 1;
+          updateCart(cart);
+        }
+      });
+
+      // ==============================
+      // Plus / Minus on Product Cards
+      // ==============================
+      document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('plus')) {
+          let id = e.target.id.replace("plus", "");
+          cart[id] = cart[id] + 1;
+          updateCart(cart);
+        }
+        if (e.target.classList.contains('minus')) {
+          let id = e.target.id.replace("minus", "");
+          cart[id] = Math.max(0, cart[id] - 1);
+          if (cart[id] === 0) {
+            // If qty = 0 → back to Add To Cart button
+            let div = document.getElementById('div' + id);
+            div.innerHTML = `<button id="${id}" class="btn btn-primary cart w-100">Add To Cart</button>`;
+            delete cart[id];
+          }
+          updateCart(cart);
+        }
+      });
+
+      // ============================
+      // Bootstrap 5 Popover (Cart UI)
+      // ============================
+      const popoverTrigger = document.getElementById('popcart');
+      const popover = new bootstrap.Popover(popoverTrigger, {
+        trigger: 'focus',
+        html: true,
+        content: "<em>Your cart items will appear here.</em>"
+      });
+
+      // Initial setup on page load
+      updateCart(cart);
+    </script>
+    {% endblock %}
+  </body>
+</html>

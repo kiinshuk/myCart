@@ -1,0 +1,181 @@
+{% extends 'shop/basic.html' %}
+
+{% block css %}
+.card {
+  width: 16rem;
+  min-height: 360px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #fff;
+  margin: auto;
+  height: 100%;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+.card-img-top {
+  height: 160px;
+  object-fit: contain;
+  padding: 10px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  padding: 1rem;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+  text-align: center;
+}
+.card-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+.see-more {
+  font-size: 0.8rem;
+  color: #007bff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 0.5rem;
+  align-self: flex-start;
+}
+.card .btn {
+  background: linear-gradient(90deg, #007bff, #0056d2);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  transition: background 0.3s ease;
+}
+.card .btn:hover {
+  background: linear-gradient(90deg, #0056d2, #003e9e);
+}
+.carousel-control-prev,
+.carousel-control-next {
+  width: 5%;
+}
+.carousel-control-prev {
+  left: -50px;
+}
+.carousel-control-next {
+  right: -50px;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-size: 50% 50%;
+  border-radius: 50%;
+  padding: 18px;
+  background-color: rgba(0, 123, 255, 0.6);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  background-color: rgba(0, 123, 255, 0.85);
+  transform: scale(1.1);
+}
+{% endblock %}
+
+
+{% block body %}
+{% load static %}
+
+<div class="container">
+  {% for product, range, nSlides in allProds %}
+    <h5 class="my-4 text-primary fw-bold">
+      Flash Sale On {{ product.0.category }} - Recommended Items
+    </h5>
+
+    <div id="carousel{{ forloop.counter }}" class="carousel slide my-3" data-bs-ride="carousel">
+      
+      <!-- Indicators -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide-to="0" class="active"></button>
+        {% for i in range %}
+          <button type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide-to="{{ i }}"></button>
+        {% endfor %}
+      </div>
+
+      <!-- Carousel inner -->
+      <div class="carousel-inner no-padding">
+        {% for i in product %}
+          {% if forloop.first %}
+            <div class="carousel-item active">
+              <div class="row">
+          {% elif forloop.counter0|divisibleby:4 %}
+              </div></div>
+              <div class="carousel-item">
+                <div class="row">
+          {% endif %}
+
+          <div class="col-xs-12 col-sm-6 col-md-3 d-flex">
+            <div class="card">
+              <img src="/media/{{ i.image }}" class="card-img-top" alt="{{ i.product_name }}">
+              <div class="card-body">
+                <h5 class="card-title">{{ i.product_name }}</h5>
+                <p class="card-text">{{ i.desc }}</p>
+                <button class="see-more" onclick="toggleDesc(this)">See More</button>
+
+                <div class="mt-auto">
+                  <span id="divpr{{i.id}}">
+                    <button id="pr{{i.id}}" class="btn btn-primary w-100 cart">Add To Cart</button>
+                  </span>
+                  <a href="/shop/productview/{{i.id}}">
+                    <button id="qv{{i.id}}" class="btn btn-primary w-100 my-2">Quick View</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% if forloop.last %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Controls -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ forloop.counter }}" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+function toggleDesc(btn) {
+  const text = btn.previousElementSibling;
+  if (text.style.webkitLineClamp === "unset") {
+    text.style.webkitLineClamp = "3";
+    btn.innerText = "See More";
+  } else {
+    text.style.webkitLineClamp = "unset";
+    btn.innerText = "See Less";
+  }
+}
+</script>
+{% endblock %}

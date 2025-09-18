@@ -1,0 +1,80 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} {{ product.product_name }} {% endblock %}
+
+{% block css %}
+.product-container {
+  margin-top: 2rem;
+}
+
+.product-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 2rem;
+  background: #fff;
+}
+
+.product-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fafafa;
+  padding: 1rem;
+}
+
+.product-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.product-desc {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.btn-add {
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.btn-add:hover {
+  background: linear-gradient(90deg, #0056d2, #003e9e);
+}
+{% endblock %}
+
+{% block body %} 
+<div class="container product-container">
+  <div class="card product-card">
+    <div class="row g-4 align-items-center">
+
+      <!-- Product Image -->
+      <div class="col-md-5 text-center">
+        <img src="/media/{{ product.image }}" alt="{{ product.product_name }}" class="product-image">
+      </div>
+
+      <!-- Product Details -->
+      <div class="col-md-7">
+        <h2 class="product-title">{{ product.product_name }}</h2>
+        <p><b>Rs.{{product.price}}</b></p>
+        <p class="product-desc">{{ product.desc }}</p>
+        
+        <div class="d-flex gap-3">
+          <button class="btn btn-add">Add to Cart</button>
+          <button class="btn btn-outline-secondary">Buy Now</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
