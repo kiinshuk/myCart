@@ -96,7 +96,6 @@
 }
 {% endblock %}
 
-
 {% block body %}
 {% load static %}
 
@@ -117,13 +116,14 @@
       </div>
 
       <!-- Carousel inner -->
-      <div class="carousel-inner no-padding">
+      <div class="carousel-inner">
         {% for i in product %}
           {% if forloop.first %}
             <div class="carousel-item active">
               <div class="row">
           {% elif forloop.counter0|divisibleby:4 %}
-              </div></div>
+              </div>
+            </div>
               <div class="carousel-item">
                 <div class="row">
           {% endif %}
@@ -132,7 +132,7 @@
             <div class="card">
               <img src="/media/{{ i.image }}" class="card-img-top" alt="{{ i.product_name }}">
               <div class="card-body">
-                <h5 class="card-title">{{ i.product_name }}</h5>
+                <h5 class="card-title" id="namepr{{ i.id }}">{{ i.product_name }}</h5>
                 <p class="card-text">{{ i.desc }}</p>
                 <button class="see-more" onclick="toggleDesc(this)">See More</button>
 
@@ -141,7 +141,7 @@
                     <button id="pr{{i.id}}" class="btn btn-primary w-100 cart">Add To Cart</button>
                   </span>
                   <a href="/shop/productview/{{i.id}}">
-                    <button id="qv{{i.id}}" class="btn btn-primary w-100 my-2">Quick View</button>
+                    <button class="btn btn-primary w-100 my-2">Quick View</button>
                   </a>
                 </div>
               </div>

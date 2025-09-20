@@ -36,6 +36,7 @@
     </style>
   </head>
   <body>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="/shop">MyCart</a>
@@ -59,6 +60,7 @@
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Search</button>
           </form>
+          <!-- Cart Button -->
           <button type="button" class="btn btn-secondary mx-2" id="popcart"
             data-bs-toggle="popover" data-bs-placement="bottom"
             data-bs-html="true"
@@ -76,89 +78,160 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block js %}
-    <script>
-      console.log("working");
+   <script>
+console.log("working");
 
-      // ===============================
-      // Load cart data from localStorage
-      // ===============================
-      let cart = {};
-      if (localStorage.getItem('cart')) {
-        cart = JSON.parse(localStorage.getItem('cart'));
-        document.getElementById('cart').innerText = Object.keys(cart).length;
-      }
+// ===============================
+// Load cart data from localStorage
+// ===============================
+let cart = {};
+if (localStorage.getItem('cart')) {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    document.getElementById('cart').innerText = Object.keys(cart).length;
+}
 
-      // ====================================================
-      // Function to update cart count + update card buttons
-      // ====================================================
-      function updateCart(cart) {
-        // Save cart in localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
-        // Update cart counter in navbar
-        document.getElementById('cart').innerText = Object.keys(cart).length;
+// ====================================================
+// Function to update cart count + update card buttons
+// ====================================================
+function updateCart(cart) {
+    let sum = 0;
 
-        // For each item in cart → show - qty +
-        for (let item in cart) {
-          let div = document.getElementById('div' + item);
-          if (div) {
+    for (let item in cart) {
+        sum += cart[item];
+        let div = document.getElementById('div' + item);
+        if (div) {
             div.innerHTML = `
-              <div class="cart-controls">
-                <button id="minus${item}" class="btn btn-danger minus">-</button>
-                <span id="val${item}">${cart[item]}</span>
-                <button id="plus${item}" class="btn btn-success plus">+</button>
-              </div>
+                <div class="cart-controls">
+                    <button id="minus${item}" class="btn btn-danger minus">-</button>
+                    <span id="val${item}">${cart[item]}</span>
+                    <button id="plus${item}" class="btn btn-success plus">+</button>
+                </div>
             `;
-          }
         }
-      }
+    }
 
-      // ==================================
-      // Add To Cart button → first click
-      // ==================================
-      document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('cart')) {
-          let idstr = e.target.id.toString(); // e.g. pr12
-          // If already in cart, increment, else add new
-          cart[idstr] = cart[idstr] ? cart[idstr] + 1 : 1;
-          updateCart(cart);
-        }
-      });
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerText = sum;
 
-      // ==============================
-      // Plus / Minus on Product Cards
-      // ==============================
-      document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('plus')) {
-          let id = e.target.id.replace("plus", "");
-          cart[id] = cart[id] + 1;
-          updateCart(cart);
-        }
-        if (e.target.classList.contains('minus')) {
-          let id = e.target.id.replace("minus", "");
-          cart[id] = Math.max(0, cart[id] - 1);
-          if (cart[id] === 0) {
-            // If qty = 0 → back to Add To Cart button
+    updatePopover(cart);
+}
+
+// ==================================
+// Add To Cart button (generic)
+// ==================================
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('cart')) {
+        let idstr = e.target.id.toString();
+        cart[idstr] = cart[idstr] ? cart[idstr] + 1 : 1;
+        updateCart(cart);
+    }
+});
+
+// ==================================
+// Plus / Minus buttons
+// ==================================
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('plus')) {
+        let id = e.target.id.replace("plus", "");
+        cart[id] = cart[id] + 1;
+        updateCart(cart);
+    }
+    if (e.target.classList.contains('minus')) {
+        let id = e.target.id.replace("minus", "");
+        cart[id] = Math.max(0, cart[id] - 1);
+        if (cart[id] === 0) {
             let div = document.getElementById('div' + id);
-            div.innerHTML = `<button id="${id}" class="btn btn-primary cart w-100">Add To Cart</button>`;
+            if (div) {
+                div.innerHTML = `<button id="${id}" class="btn btn-primary cart w-100">Add To Cart</button>`;
+            }
             delete cart[id];
-          }
-          updateCart(cart);
         }
-      });
+        updateCart(cart);
+    }
+});
 
-      // ============================
-      // Bootstrap 5 Popover (Cart UI)
-      // ============================
-      const popoverTrigger = document.getElementById('popcart');
-      const popover = new bootstrap.Popover(popoverTrigger, {
-        trigger: 'focus',
+// ==============================
+// Clear Cart
+// ==============================
+function clearCart() {
+    for (let item in cart) {
+        let div = document.getElementById('div' + item);
+        if (div) {
+            div.innerHTML = `<button id="${item}" class="btn btn-primary cart">Add To Cart</button>`;
+        }
+    }
+    localStorage.removeItem('cart');
+    cart = {};
+    updateCart(cart);
+}
+
+// ======================================
+// Update Popover (Bootstrap 5, plain JS)
+// ======================================
+function updatePopover(cart) {
+    let popStr = "";
+
+    if (Object.keys(cart).length === 0) {
+        popStr = "<em>Your cart is empty.</em>";
+    } else {
+        popStr += "<h5>🛒 Your Cart</h5><div class='cart-list'>";
+        let i = 1;
+        for (let item in cart) {
+            let nameElement = document.getElementById('name' + item);
+            let name = nameElement ? nameElement.innerText.slice(0, 19) : "Unknown Product";
+
+            popStr += `
+                <div class="cart-item mb-2">
+                    <b>${i}.</b> ${name}... <br>
+                    Qty: <span class="fw-bold">${cart[item]}</span>
+                </div>
+            `;
+            i++;
+        }
+        popStr += "</div>";
+
+        // Add Checkout and Clear Cart buttons
+        popStr += `
+            <div style="margin-top:10px; display:flex; gap:5px;">
+                <a href="/shop/checkout">
+                    <button class="btn btn-primary btn-sm" id="checkout">Checkout</button>
+                </a>
+                <button class="btn btn-danger btn-sm" id="clearCartBtn">Clear Cart</button>
+            </div>
+        `;
+    }
+
+    let popcart = document.getElementById('popcart');
+
+    // Dispose existing popover if any
+    let existingPopover = bootstrap.Popover.getInstance(popcart);
+    if (existingPopover) existingPopover.dispose();
+
+    // Create new popover
+    new bootstrap.Popover(popcart, {
         html: true,
-        content: "<em>Your cart items will appear here.</em>"
-      });
+        content: popStr,
+        trigger: 'focus'
+    });
 
-      // Initial setup on page load
-      updateCart(cart);
-    </script>
+    popcart.setAttribute('data-bs-content', popStr);
+}
+
+// ======================================
+// Handle Clear Cart button in popover
+// ======================================
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'clearCartBtn') {
+        clearCart();
+    }
+});
+
+// ============================
+// Initial setup on page load
+// ============================
+updateCart(cart);
+</script>
+
     {% endblock %}
   </body>
 </html>
