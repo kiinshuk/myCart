@@ -30,7 +30,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['myCart.onrender.com']
+ALLOWED_HOSTS = ['mycart.onrender.com']
 
 
 # Application definition
