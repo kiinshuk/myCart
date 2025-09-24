@@ -125,7 +125,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
  # managing media
-MEDIA_ROOT=BASE_DIR/ 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL= '/media/'
 
 # If you have a 'static' folder in your project root
@@ -136,3 +136,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+WHITENOISE_ALLOW_ALL_ORIGINS = True
